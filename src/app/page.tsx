@@ -41,6 +41,14 @@ const LunarSurface3D = dynamic(
   },
 );
 
+const LandingScrollScene3D = dynamic(
+  () =>
+    import("@/components/LandingScrollScene3D").then(
+      (mod) => mod.LandingScrollScene3D
+    ),
+  { ssr: false }
+);
+
 function NavigatorContent() {
   const workspaceRef = useRef<HTMLDivElement>(null);
 
@@ -160,6 +168,7 @@ function NavigatorContent() {
             exit={{ opacity: 0, transition: { duration: 0.3 } }}
             transition={{ duration: 0.5 }}
           >
+            <LandingScrollScene3D />
             <ScrollIntro
               onLaunch={handleLaunchSimulator}
               workspacePreview={workspaceVisuals}

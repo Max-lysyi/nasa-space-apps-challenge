@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Rocket, Sun, Globe, ArrowDown, Zap } from "lucide-react";
+import { Rocket, ArrowDown, Zap } from "lucide-react";
 
 interface ScrollIntroProps {
   onLaunch: () => void;
@@ -35,27 +35,6 @@ export function ScrollIntro({ onLaunch, workspacePreview }: ScrollIntroProps) {
     <div className="relative">
       {/* Hero Section */}
       <section className="relative h-screen flex flex-col items-center justify-center overflow-hidden">
-        {/* Star field background */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.6) 0%, transparent 100%), " +
-              "radial-gradient(1px 1px at 40% 70%, rgba(255,255,255,0.4) 0%, transparent 100%), " +
-              "radial-gradient(1px 1px at 60% 20%, rgba(255,255,255,0.5) 0%, transparent 100%), " +
-              "radial-gradient(1px 1px at 80% 60%, rgba(255,255,255,0.3) 0%, transparent 100%), " +
-              "radial-gradient(1.5px 1.5px at 10% 80%, rgba(255,255,255,0.7) 0%, transparent 100%), " +
-              "radial-gradient(1px 1px at 70% 50%, rgba(255,255,255,0.4) 0%, transparent 100%), " +
-              "radial-gradient(1px 1px at 90% 10%, rgba(255,255,255,0.5) 0%, transparent 100%), " +
-              "radial-gradient(1px 1px at 50% 90%, rgba(255,255,255,0.3) 0%, transparent 100%), " +
-              "radial-gradient(1px 1px at 30% 50%, rgba(255,255,255,0.4) 0%, transparent 100%), " +
-              "radial-gradient(1.5px 1.5px at 85% 35%, rgba(255,255,255,0.6) 0%, transparent 100%)",
-          }}
-        />
-
-        {/* Moon glow */}
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full bg-gradient-to-t from-gray-300/10 via-gray-400/5 to-transparent blur-3xl" />
-
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -110,30 +89,8 @@ export function ScrollIntro({ onLaunch, workspacePreview }: ScrollIntroProps) {
       <section className="max-w-6xl mx-auto px-8 md:px-16 min-h-[85vh] flex flex-col justify-center py-24">
         <IntroCard>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16 items-center">
-            {/* Visual — Moon with dramatic terminator */}
-            <div className="relative flex items-center justify-center">
-              <div className="w-64 h-64 md:w-80 md:h-80 rounded-full relative overflow-hidden">
-                {/* Lit hemisphere */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-700/60 to-gray-200/30 rounded-full" />
-                {/* Dark hemisphere */}
-                <div className="absolute inset-0 bg-gradient-to-l from-transparent to-gray-900/90 rounded-full" />
-                {/* Surface texture */}
-                <div
-                  className="absolute inset-0 rounded-full opacity-40"
-                  style={{
-                    background:
-                      "radial-gradient(circle at 30% 40%, rgba(100,100,100,0.3) 0%, transparent 40%), " +
-                      "radial-gradient(circle at 60% 60%, rgba(80,80,80,0.2) 0%, transparent 30%), " +
-                      "radial-gradient(circle at 45% 75%, rgba(60,60,60,0.4) 0%, transparent 25%)",
-                  }}
-                />
-                {/* South pole highlight */}
-                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-accent-gold/80 blur-sm" />
-                <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-accent-gold" />
-              </div>
-              {/* Sun indicator */}
-              <Sun className="absolute -right-4 top-1/2 -translate-y-1/2 w-10 h-10 text-accent-gold/60" />
-            </div>
+            {/* 3D Moon Placeholder Spacer (Left Column) — lets the 3D Moon with Artemis Flag shine through */}
+            <div className="h-72 md:h-96 flex items-center justify-center pointer-events-none" />
 
             <div>
               <p className="text-accent-gold text-sm font-mono tracking-[0.2em] uppercase mb-3">
@@ -202,46 +159,8 @@ export function ScrollIntro({ onLaunch, workspacePreview }: ScrollIntroProps) {
               </p>
             </div>
 
-            {/* Visual — Horizon silhouette with wobbling Earth */}
-            <div className="order-1 md:order-2 relative h-56 flex items-end justify-center">
-              {/* Sky dome */}
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-space-deep rounded-2xl" />
-
-              {/* Terrain silhouette */}
-              <svg
-                viewBox="0 0 400 120"
-                className="relative z-10 w-full h-32"
-                preserveAspectRatio="none"
-              >
-                <path
-                  d="M0,100 Q20,85 40,90 Q60,75 80,85 Q100,50 120,65 Q140,45 160,55 Q180,40 200,45 Q220,50 240,55 Q260,65 280,50 Q300,60 320,70 Q340,80 360,75 Q380,85 400,90 L400,120 L0,120 Z"
-                  fill="#1a1d24"
-                  stroke="rgba(255,255,255,0.2)"
-                  strokeWidth="1"
-                />
-              </svg>
-
-              {/* Earth icon wobbling */}
-              <motion.div
-                className="absolute top-6 right-20 z-20"
-                animate={{
-                  x: [0, 12, 0, -12, 0],
-                  y: [0, -8, 4, -8, 0],
-                }}
-                transition={{
-                  duration: 6,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              >
-                <Globe className="w-8 h-8 text-accent-blue" />
-              </motion.div>
-
-              {/* Libration label */}
-              <div className="absolute top-4 right-4 text-xs text-text-muted font-mono z-20">
-                ±7.9° lon / ±6.7° lat
-              </div>
-            </div>
+            {/* 3D Satellite & Moon Placeholder Spacer (Right Column) — lets the 3D Moon & orbiting satellite shine through */}
+            <div className="order-1 md:order-2 h-72 md:h-96 flex items-center justify-center pointer-events-none" />
           </div>
         </IntroCard>
       </section>
@@ -330,40 +249,45 @@ export function ScrollIntro({ onLaunch, workspacePreview }: ScrollIntroProps) {
               </motion.div>
             </div>
 
-            {/* Blurred Non-Interactive 3D Workspace Preview */}
-            {workspacePreview && (
-              <div className="relative mt-12 w-full max-w-6xl mx-auto">
-                <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-space-deep/60 shadow-2xl">
-                  {/* Blurred and non-interactive preview container */}
-                  <div className="filter blur-[6px] opacity-65 pointer-events-none select-none transition-all duration-700 overflow-hidden max-h-[75vh]">
-                    {workspacePreview}
-                  </div>
 
-                  {/* Smooth radial dark gradient overlay */}
-                  <div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{
-                      background:
-                        "radial-gradient(circle at center, rgba(3,5,8,0.3) 0%, rgba(3,5,8,0.7) 60%, rgba(3,5,8,0.95) 100%)",
-                    }}
-                  />
+          </div>
+        </IntroCard>
+      </section>
+      <section className="max-w-6xl mx-auto px-8 md:px-16 min-h-[85vh] flex flex-col justify-center py-24">
+        <IntroCard>
+          {/* Blurred Non-Interactive 3D Workspace Preview */}
+          {workspacePreview && (
+            <div className="relative mt-12 w-full max-w-6xl mx-auto">
+              <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-space-deep/60 shadow-2xl">
+                {/* Blurred and non-interactive preview container */}
+                <div className="filter blur-[3px] opacity-65 pointer-events-none select-none transition-all duration-700 overflow-hidden max-h-[75vh]">
+                  {workspacePreview}
+                </div>
 
-                  {/* Centered glowing amber CTA button */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center z-30">
-                    <p className="text-xs uppercase tracking-widest text-text-muted mb-4 font-mono">
-                      Tactical HUD · Real-Time Ephemeris Ready
-                    </p>
-                    <button
-                      onClick={onLaunch}
-                      className="pointer-events-auto z-30 px-8 py-4 bg-gradient-to-r from-accent-gold/30 via-accent-gold/20 to-accent-gold/30 hover:from-accent-gold/40 hover:to-accent-gold/40 border border-accent-gold/60 rounded-full text-accent-gold font-bold text-lg shadow-2xl shadow-accent-gold/30 scale-105 hover:scale-110 transition-transform cursor-pointer flex items-center gap-3 animate-pulse-glow"
-                    >
-                      <span>🚀</span> Launch Mission Navigator
-                    </button>
-                  </div>
+                {/* Smooth radial dark gradient overlay */}
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background:
+                      "radial-gradient(circle at center, rgba(3,5,8,0.3) 0%, rgba(3,5,8,0.7) 60%, rgba(3,5,8,0.95) 100%)",
+                  }}
+                />
+
+                {/* Centered glowing amber CTA button */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center z-30">
+                  <p className="text-xs uppercase tracking-widest text-text-muted mb-4 font-mono">
+                    Tactical HUD · Real-Time Ephemeris Ready
+                  </p>
+                  <button
+                    onClick={onLaunch}
+                    className="pointer-events-auto z-30 px-8 py-4 bg-gradient-to-r from-accent-gold/30 via-accent-gold/20 to-accent-gold/30 hover:from-accent-gold/40 hover:to-accent-gold/40 border border-accent-gold/60 rounded-full text-accent-gold font-bold text-lg shadow-2xl shadow-accent-gold/30 scale-105 hover:scale-110 transition-transform cursor-pointer flex items-center gap-3 animate-pulse-glow"
+                  >
+                    <span>🚀</span> Launch Mission Navigator
+                  </button>
                 </div>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </IntroCard>
       </section>
     </div>

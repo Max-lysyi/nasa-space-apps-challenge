@@ -342,27 +342,27 @@ export function ScenarioComparison({
               <Sun className="w-3.5 h-3.5 text-accent-gold" />
               <span className="text-text-secondary">Sunlit:</span>
               <span className="font-mono text-white">
-                {scenarioA.metrics.sunlitPercentage.toFixed(1)}%
+                {Math.min(100, Math.max(0, scenarioA.metrics.sunlitPercentage)).toFixed(1)}%
               </span>
               <span className="text-text-muted">
-                ({scenarioA.metrics.sunlitHours.toFixed(0)}h)
+                ({Math.min(scenarioA.metrics.totalCycleHours, scenarioA.metrics.sunlitHours).toFixed(0)}h)
               </span>
             </div>
             <div className="flex items-center gap-2 text-xs">
               <Globe className="w-3.5 h-3.5 text-accent-blue" />
               <span className="text-text-secondary">DTE:</span>
               <span className="font-mono text-white">
-                {scenarioA.metrics.dteWindowPercentage.toFixed(1)}%
+                {Math.min(100, Math.max(0, scenarioA.metrics.dteWindowPercentage)).toFixed(1)}%
               </span>
               <span className="text-text-muted">
-                ({scenarioA.metrics.dteWindowHours.toFixed(0)}h)
+                ({Math.min(scenarioA.metrics.totalCycleHours, scenarioA.metrics.dteWindowHours).toFixed(0)}h)
               </span>
             </div>
             <div className="flex items-center gap-2 text-xs">
               <Zap className="w-3.5 h-3.5 text-accent-emerald" />
               <span className="text-text-secondary">Combined:</span>
               <span className="font-mono text-white">
-                {scenarioA.metrics.combinedWindowPercentage.toFixed(1)}%
+                {Math.min(100, Math.max(0, scenarioA.metrics.combinedWindowPercentage)).toFixed(1)}%
               </span>
             </div>
             <div className="flex items-center gap-2 text-xs">
@@ -440,27 +440,27 @@ export function ScenarioComparison({
               <Sun className="w-3.5 h-3.5 text-accent-gold" />
               <span className="text-text-secondary">Sunlit:</span>
               <span className="font-mono text-white">
-                {scenarioB.metrics.sunlitPercentage.toFixed(1)}%
+                {Math.min(100, Math.max(0, scenarioB.metrics.sunlitPercentage)).toFixed(1)}%
               </span>
               <span className="text-text-muted">
-                ({scenarioB.metrics.sunlitHours.toFixed(0)}h)
+                ({Math.min(scenarioB.metrics.totalCycleHours, scenarioB.metrics.sunlitHours).toFixed(0)}h)
               </span>
             </div>
             <div className="flex items-center gap-2 text-xs">
               <Globe className="w-3.5 h-3.5 text-accent-blue" />
               <span className="text-text-secondary">DTE:</span>
               <span className="font-mono text-white">
-                {scenarioB.metrics.dteWindowPercentage.toFixed(1)}%
+                {Math.min(100, Math.max(0, scenarioB.metrics.dteWindowPercentage)).toFixed(1)}%
               </span>
               <span className="text-text-muted">
-                ({scenarioB.metrics.dteWindowHours.toFixed(0)}h)
+                ({Math.min(scenarioB.metrics.totalCycleHours, scenarioB.metrics.dteWindowHours).toFixed(0)}h)
               </span>
             </div>
             <div className="flex items-center gap-2 text-xs">
               <Zap className="w-3.5 h-3.5 text-accent-emerald" />
               <span className="text-text-secondary">Combined:</span>
               <span className="font-mono text-white">
-                {scenarioB.metrics.combinedWindowPercentage.toFixed(1)}%
+                {Math.min(100, Math.max(0, scenarioB.metrics.combinedWindowPercentage)).toFixed(1)}%
               </span>
             </div>
             <div className="flex items-center gap-2 text-xs">
@@ -502,24 +502,24 @@ export function ScenarioComparison({
 
         <MetricBar
           label="Sunlit Duration"
-          valueA={scenarioA.metrics.sunlitPercentage}
-          valueB={scenarioB.metrics.sunlitPercentage}
+          valueA={Math.min(100, Math.max(0, scenarioA.metrics.sunlitPercentage))}
+          valueB={Math.min(100, Math.max(0, scenarioB.metrics.sunlitPercentage))}
           unit="%"
           color="#f59e0b"
           max={100}
         />
         <MetricBar
           label="DTE Communication"
-          valueA={scenarioA.metrics.dteWindowPercentage}
-          valueB={scenarioB.metrics.dteWindowPercentage}
+          valueA={Math.min(100, Math.max(0, scenarioA.metrics.dteWindowPercentage))}
+          valueB={Math.min(100, Math.max(0, scenarioB.metrics.dteWindowPercentage))}
           unit="%"
           color="#3b82f6"
           max={100}
         />
         <MetricBar
           label="Combined Window"
-          valueA={scenarioA.metrics.combinedWindowPercentage}
-          valueB={scenarioB.metrics.combinedWindowPercentage}
+          valueA={Math.min(100, Math.max(0, scenarioA.metrics.combinedWindowPercentage))}
+          valueB={Math.min(100, Math.max(0, scenarioB.metrics.combinedWindowPercentage))}
           unit="%"
           color="#10b981"
           max={100}

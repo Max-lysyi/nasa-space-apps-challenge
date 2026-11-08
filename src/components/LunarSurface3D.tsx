@@ -307,7 +307,7 @@ export function LunarSurface3D({ site, ephemeris, date }: LunarSurface3DProps) {
       </div>
 
       {/* Site info overlay */}
-      <div className="absolute bottom-3 left-3 text-[10px] text-text-muted font-mono bg-black/40 px-2 py-1 rounded-lg">
+      <div className="absolute bottom-4 left-4 text-[10px] text-text-muted font-mono bg-black/60 px-2.5 py-1.5 rounded-lg border border-white/10 z-10 backdrop-blur-sm">
         <span>
           {site.shortName} · {date.toISOString().slice(0, 16)}Z
         </span>

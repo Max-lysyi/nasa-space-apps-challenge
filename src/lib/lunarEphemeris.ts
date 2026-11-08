@@ -515,18 +515,22 @@ export function computeLunarCycleMetrics(
     });
   }
 
+  const clampedSunlitHours = Math.min(totalHours, Math.max(0, sunlitHours));
+  const clampedDteHours = Math.min(totalHours, Math.max(0, dteHours));
+  const clampedCombinedHours = Math.min(totalHours, Math.max(0, combinedHours));
+
   return {
-    sunlitHours,
+    sunlitHours: clampedSunlitHours,
     totalCycleHours: totalHours,
-    sunlitPercentage: (sunlitHours / totalHours) * 100,
-    longestShadowDuration: longestShadow,
-    longestSunlitDuration: longestSunlit,
+    sunlitPercentage: Math.min(100, Math.max(0, (clampedSunlitHours / totalHours) * 100)),
+    longestShadowDuration: Math.min(totalHours, Math.max(0, longestShadow)),
+    longestSunlitDuration: Math.min(totalHours, Math.max(0, longestSunlit)),
     averageSolarElevation: sunElevCount > 0 ? sunElevSum / sunElevCount : 0,
     averagePowerFactor: powerCount > 0 ? powerSum / powerCount : 0,
-    dteWindowPercentage: (dteHours / totalHours) * 100,
-    dteWindowHours: dteHours,
-    combinedWindowPercentage: (combinedHours / totalHours) * 100,
-    combinedWindowHours: combinedHours,
+    dteWindowPercentage: Math.min(100, Math.max(0, (clampedDteHours / totalHours) * 100)),
+    dteWindowHours: clampedDteHours,
+    combinedWindowPercentage: Math.min(100, Math.max(0, (clampedCombinedHours / totalHours) * 100)),
+    combinedWindowHours: clampedCombinedHours,
     maxSolarElevation: maxSunElev,
     minSolarElevation: sunElevCount > 0 ? minSunElevDuringSunlit : 0,
     sunlitPeriods,
