@@ -16,7 +16,7 @@ function ArtemisFlagAndBeacon({
 
   useFrame((state) => {
     if (flagWaveRef.current) {
-      flagWaveRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 3.5) * 0.12;
+      flagWaveRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 4.0) * 0.18;
     }
     if (groupRef.current) {
       const a = alphaRef.current;
@@ -26,59 +26,73 @@ function ArtemisFlagAndBeacon({
   });
 
   return (
-    // Positioned at the lunar South Pole (-Y axis of Moon sphere)
-    <group ref={groupRef} position={[0, -1.005, 0]} rotation={[Math.PI, 0, 0]}>
-      {/* Glowing South Pole surface beacon */}
-      <mesh position={[0, 0.02, 0]}>
-        <sphereGeometry args={[0.035, 16, 16]} />
+    // Positioned at the lunar South Pole, tilted slightly toward viewer for high camera visibility
+    <group ref={groupRef} position={[0, -0.99, 0.12]} rotation={[Math.PI + 0.22, 0, 0]}>
+      {/* Intense glowing South Pole beacon */}
+      <mesh position={[0, 0.04, 0]}>
+        <sphereGeometry args={[0.065, 20, 20]} />
         <meshBasicMaterial color="#f59e0b" />
       </mesh>
-      <pointLight color="#f59e0b" intensity={2.5} distance={2} />
+      <pointLight color="#f59e0b" intensity={5.0} distance={3.5} />
 
-      {/* Pulsing beacon ground halo */}
-      <mesh position={[0, 0.005, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[0.05, 0.09, 32]} />
+      {/* Pulsing beacon ground halo concentric rings */}
+      <mesh position={[0, 0.008, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[0.08, 0.16, 32]} />
         <meshBasicMaterial
           color="#f59e0b"
           transparent
-          opacity={0.6}
+          opacity={0.75}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+      <mesh position={[0, 0.006, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[0.18, 0.24, 32]} />
+        <meshBasicMaterial
+          color="#f59e0b"
+          transparent
+          opacity={0.35}
           side={THREE.DoubleSide}
         />
       </mesh>
 
-      {/* Flagpole */}
-      <mesh position={[0, 0.18, 0]}>
-        <cylinderGeometry args={[0.006, 0.006, 0.36, 8]} />
+      {/* Flagpole - taller & thicker */}
+      <mesh position={[0, 0.28, 0]}>
+        <cylinderGeometry args={[0.012, 0.012, 0.56, 12]} />
         <meshStandardMaterial
-          color="#e5e7eb"
-          metalness={0.9}
-          roughness={0.15}
+          color="#f3f4f6"
+          metalness={0.95}
+          roughness={0.1}
         />
       </mesh>
+      {/* Gold spherical finial at top of pole */}
+      <mesh position={[0, 0.57, 0]}>
+        <sphereGeometry args={[0.02, 12, 12]} />
+        <meshStandardMaterial color="#fbbf24" metalness={0.9} roughness={0.1} />
+      </mesh>
 
-      {/* Flag cloth */}
-      <group position={[0, 0.28, 0]}>
-        <mesh ref={flagWaveRef} position={[0.09, 0, 0]}>
-          <planeGeometry args={[0.18, 0.11]} />
+      {/* Larger NASA / Artemis Flag cloth (0.32 x 0.20) */}
+      <group position={[0, 0.44, 0]}>
+        <mesh ref={flagWaveRef} position={[0.16, 0, 0]}>
+          <planeGeometry args={[0.32, 0.20]} />
           <meshStandardMaterial
             color="#1e3a8a"
-            roughness={0.6}
+            roughness={0.5}
             metalness={0.1}
             side={THREE.DoubleSide}
           />
         </mesh>
-        {/* Red accent stripe */}
-        <mesh position={[0.09, 0.01, 0.002]}>
-          <planeGeometry args={[0.18, 0.024]} />
+        {/* Artemis Red accent chevron/stripe */}
+        <mesh position={[0.16, 0.015, 0.003]}>
+          <planeGeometry args={[0.32, 0.045]} />
           <meshBasicMaterial
             color="#ef4444"
             side={THREE.DoubleSide}
           />
         </mesh>
-        {/* White star dot */}
-        <mesh position={[0.04, 0.02, 0.003]}>
-          <circleGeometry args={[0.012, 12]} />
-          <meshBasicMaterial color="#ffffff" />
+        {/* White star cluster */}
+        <mesh position={[0.07, 0.035, 0.004]}>
+          <circleGeometry args={[0.022, 16]} />
+          <meshBasicMaterial color="#ffffff" side={THREE.DoubleSide} />
         </mesh>
       </group>
     </group>
@@ -215,6 +229,223 @@ function RelaySatellite({
   );
 }
 
+// ── 3D CLPS Lunar Lander & 500m Dispersion Target Rings ─────────────────────
+function CLPSLanderAndDispersionTargets({
+  alphaRef,
+}: {
+  alphaRef: React.MutableRefObject<number>;
+}) {
+  const groupRef = useRef<THREE.Group>(null);
+  const landerRef = useRef<THREE.Group>(null);
+  const thrusterPlumeRef = useRef<THREE.Mesh>(null);
+  const lidarConeRef = useRef<THREE.Mesh>(null);
+  const greenPulseRef = useRef<THREE.Mesh>(null);
+  const redPulseRef = useRef<THREE.Mesh>(null);
+
+  useFrame((state) => {
+    const a = alphaRef.current;
+    if (groupRef.current) {
+      groupRef.current.visible = a > 0.01;
+      groupRef.current.scale.setScalar(Math.max(0.001, a));
+    }
+    if (a <= 0.01) return;
+
+    const t = state.clock.elapsedTime;
+
+    // Hovering & descending motion for CLPS Lunar Lander
+    if (landerRef.current) {
+      landerRef.current.position.y = 1.25 + Math.sin(t * 1.6) * 0.06;
+      landerRef.current.position.x = -0.08 + Math.cos(t * 1.1) * 0.04;
+      landerRef.current.rotation.z = Math.sin(t * 1.3) * 0.05;
+      landerRef.current.rotation.x = Math.cos(t * 1.5) * 0.04;
+    }
+
+    // Flickering cyan retro-propulsion thruster plume
+    if (thrusterPlumeRef.current) {
+      const flicker = 0.85 + Math.sin(t * 24) * 0.15;
+      thrusterPlumeRef.current.scale.set(1, flicker, 1);
+      const mat = thrusterPlumeRef.current.material as THREE.MeshBasicMaterial;
+      if (mat) mat.opacity = (0.7 + Math.sin(t * 18) * 0.25) * a;
+    }
+
+    // Scanning LiDAR cone oscillating between Green Ridge Target and Red Crater Hazard
+    if (lidarConeRef.current) {
+      const sweep = Math.sin(t * 2.4);
+      lidarConeRef.current.rotation.z = sweep * 0.26;
+      const mat = lidarConeRef.current.material as THREE.MeshBasicMaterial;
+      if (mat) mat.opacity = (0.28 + Math.sin(t * 8) * 0.12) * a;
+    }
+
+    // Target rings pulsing
+    if (greenPulseRef.current) {
+      const pScale = 1.0 + Math.sin(t * 3.5) * 0.15;
+      greenPulseRef.current.scale.setScalar(pScale);
+    }
+    if (redPulseRef.current) {
+      const pScale = 1.0 + Math.sin(t * 3.5 + Math.PI) * 0.15;
+      redPulseRef.current.scale.setScalar(pScale);
+    }
+  });
+
+  return (
+    <group ref={groupRef}>
+      {/* ── 500m LANDING DISPERSION TARGET RINGS (On Lunar Surface) ── */}
+
+      {/* Target A: Emerald Green (89% Sunlit Ridge) */}
+      <group position={[-0.24, 0.90, 0.38]} rotation={[-0.42, -0.22, 0.15]}>
+        {/* Outer targeting ring */}
+        <mesh>
+          <ringGeometry args={[0.075, 0.09, 32]} />
+          <meshBasicMaterial color="#10b981" side={THREE.DoubleSide} transparent opacity={0.9} />
+        </mesh>
+        {/* Pulsing inner ring */}
+        <mesh ref={greenPulseRef}>
+          <ringGeometry args={[0.04, 0.055, 32]} />
+          <meshBasicMaterial color="#34d399" side={THREE.DoubleSide} transparent opacity={0.65} />
+        </mesh>
+        {/* Center reticle dot */}
+        <mesh>
+          <circleGeometry args={[0.018, 16]} />
+          <meshBasicMaterial color="#10b981" side={THREE.DoubleSide} />
+        </mesh>
+        {/* Ground illumination */}
+        <pointLight color="#10b981" intensity={2.0} distance={1.2} />
+      </group>
+
+      {/* Target B: Crimson Red (12% Shadow Crater — 500m Offset Hazard) */}
+      <group position={[0.08, 0.88, 0.44]} rotation={[-0.45, 0.10, -0.08]}>
+        {/* Outer hazard warning ring */}
+        <mesh>
+          <ringGeometry args={[0.075, 0.09, 32]} />
+          <meshBasicMaterial color="#ef4444" side={THREE.DoubleSide} transparent opacity={0.9} />
+        </mesh>
+        {/* Pulsing hazard ring */}
+        <mesh ref={redPulseRef}>
+          <ringGeometry args={[0.04, 0.055, 32]} />
+          <meshBasicMaterial color="#f87171" side={THREE.DoubleSide} transparent opacity={0.65} />
+        </mesh>
+        {/* Center hazard cross */}
+        <mesh>
+          <boxGeometry args={[0.04, 0.008, 0.002]} />
+          <meshBasicMaterial color="#ef4444" />
+        </mesh>
+        <mesh>
+          <boxGeometry args={[0.008, 0.04, 0.002]} />
+          <meshBasicMaterial color="#ef4444" />
+        </mesh>
+        {/* Hazard ground warning light */}
+        <pointLight color="#ef4444" intensity={2.0} distance={1.2} />
+      </group>
+
+      {/* Connecting 500m Dispersion Baseline Bar */}
+      <group position={[-0.08, 0.89, 0.41]} rotation={[-0.43, -0.06, 0.05]}>
+        <mesh>
+          <boxGeometry args={[0.31, 0.005, 0.004]} />
+          <meshBasicMaterial color="#f59e0b" transparent opacity={0.7} />
+        </mesh>
+        {/* Central 500m diamond marker */}
+        <mesh rotation={[0, 0, Math.PI / 4]}>
+          <boxGeometry args={[0.025, 0.025, 0.005]} />
+          <meshBasicMaterial color="#f59e0b" />
+        </mesh>
+      </group>
+
+      {/* ── 3D CLPS LUNAR LANDER SPACECRAFT ── */}
+      <group ref={landerRef} position={[-0.08, 1.25, 0.50]}>
+        {/* Main Descent Stage Body (Golden Multi-Layer Insulation) */}
+        <mesh>
+          <cylinderGeometry args={[0.08, 0.11, 0.10, 8]} />
+          <meshStandardMaterial
+            color="#eab308"
+            metalness={0.92}
+            roughness={0.2}
+          />
+        </mesh>
+
+        {/* Avionics & Equipment Upper Deck (Silver Metallic) */}
+        <mesh position={[0, 0.075, 0]}>
+          <cylinderGeometry args={[0.065, 0.075, 0.05, 8]} />
+          <meshStandardMaterial
+            color="#e2e8f0"
+            metalness={0.95}
+            roughness={0.15}
+          />
+        </mesh>
+
+        {/* High Gain Communication Antenna Dish */}
+        <mesh position={[0.05, 0.12, 0]} rotation={[0.4, 0.3, 0]}>
+          <cylinderGeometry args={[0.04, 0.005, 0.015, 12, 1, true]} />
+          <meshStandardMaterial color="#f8fafc" metalness={0.9} roughness={0.1} side={THREE.DoubleSide} />
+        </mesh>
+
+        {/* 4 Cantilevered Landing Gear Legs with Footpads */}
+        {[0, Math.PI / 2, Math.PI, (3 * Math.PI) / 2].map((angle, i) => (
+          <group key={i} rotation={[0, angle, 0]}>
+            {/* Upper diagonal strut */}
+            <mesh position={[0.11, -0.04, 0]} rotation={[0, 0, -0.7]}>
+              <cylinderGeometry args={[0.005, 0.005, 0.13, 6]} />
+              <meshStandardMaterial color="#94a3b8" metalness={0.9} roughness={0.2} />
+            </mesh>
+            {/* Lower footpad strut */}
+            <mesh position={[0.16, -0.09, 0]} rotation={[0, 0, 0.2]}>
+              <cylinderGeometry args={[0.004, 0.004, 0.07, 6]} />
+              <meshStandardMaterial color="#64748b" metalness={0.9} roughness={0.2} />
+            </mesh>
+            {/* Circular landing footpad */}
+            <mesh position={[0.17, -0.12, 0]}>
+              <cylinderGeometry args={[0.02, 0.02, 0.004, 12]} />
+              <meshStandardMaterial color="#cbd5e1" metalness={0.8} roughness={0.3} />
+            </mesh>
+          </group>
+        ))}
+
+        {/* Main Descent Engine Bell Nozzle */}
+        <mesh position={[0, -0.065, 0]}>
+          <cylinderGeometry args={[0.018, 0.038, 0.04, 12, 1, true]} />
+          <meshStandardMaterial color="#334155" metalness={0.9} roughness={0.3} side={THREE.DoubleSide} />
+        </mesh>
+
+        {/* Glowing Blue/Cyan Retro-Propulsion Thruster Plume */}
+        <group position={[0, -0.14, 0]}>
+          <mesh ref={thrusterPlumeRef} rotation={[Math.PI, 0, 0]}>
+            <coneGeometry args={[0.035, 0.12, 16]} />
+            <meshBasicMaterial
+              color="#38bdf8"
+              transparent
+              opacity={0.85}
+              blending={THREE.AdditiveBlending}
+            />
+          </mesh>
+          {/* Inner core flame */}
+          <mesh rotation={[Math.PI, 0, 0]}>
+            <coneGeometry args={[0.018, 0.07, 16]} />
+            <meshBasicMaterial
+              color="#ffffff"
+              transparent
+              opacity={0.95}
+              blending={THREE.AdditiveBlending}
+            />
+          </mesh>
+          {/* Thruster point light */}
+          <pointLight color="#38bdf8" intensity={2.5} distance={1.2} />
+        </group>
+
+        {/* Scanning LiDAR / Laser Hazard Detection Cone */}
+        <mesh ref={lidarConeRef} position={[0, -0.32, 0]}>
+          <coneGeometry args={[0.18, 0.48, 16, 1, true]} />
+          <meshBasicMaterial
+            color="#38bdf8"
+            transparent
+            opacity={0.3}
+            blending={THREE.AdditiveBlending}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
+      </group>
+    </group>
+  );
+}
+
 // ── Main Scene Internals (Earth, Moon, Motion Interpolation) ─────────────────
 function CelestialScrollExperience({
   scrollProgressRef,
@@ -240,13 +471,15 @@ function CelestialScrollExperience({
   // Dynamic opacities tracked via mutable refs to prevent React 60fps re-renders
   const flagAlphaRef = useRef(0);
   const satAlphaRef = useRef(0);
+  const landerAlphaRef = useRef(0);
 
   useFrame((state, delta) => {
-    // Silky smooth dampening of scroll progress (reverses cleanly on scroll up!)
+    // Fast, responsive damping (responds immediately to scroll wheel/touchpad without trailing lag)
+    const factor = 1 - Math.exp(-14 * delta);
     currentProgress.current = THREE.MathUtils.lerp(
       currentProgress.current,
       scrollProgressRef.current,
-      0.08
+      factor
     );
     const p = currentProgress.current;
 
@@ -261,14 +494,6 @@ function CelestialScrollExperience({
     // Responsive position multiplier based on viewport width
     const xResponsive = Math.min(1.0, Math.max(0.45, viewport.width / 9.5));
 
-    // ── STAGE 0: HERO (p: 0.0 -> 0.16) ───────────────────────────────────────
-    // Earth prominent in space, Moon in orbit around Earth
-    orbitTimeRef.current += delta * 0.55;
-    const heroOrbitRadius = 2.7;
-    const orbitX = Math.cos(orbitTimeRef.current) * heroOrbitRadius;
-    const orbitY = Math.sin(orbitTimeRef.current * 0.8) * 0.55;
-    const orbitZ = Math.sin(orbitTimeRef.current) * 1.8;
-
     // Target transforms for Moon
     let targetX = 0;
     let targetY = 0;
@@ -279,86 +504,121 @@ function CelestialScrollExperience({
 
     let flagAlpha = 0;
     let satAlpha = 0;
+    let landerAlpha = 0;
 
     // Earth transform
     let earthOpacity = 1.0;
     const earthScale = 1.35;
-    const earthX = -0.5 * xResponsive;
-    const earthY = 0.1;
+    const earthX = -0.4 * xResponsive;
+    let earthY = 0.1;
     let earthZ = -0.8;
 
-    if (p < 0.16) {
-      // Stage 0: Hero
-      const t = p / 0.16;
-      targetX = THREE.MathUtils.lerp(orbitX, -2.4 * xResponsive, t);
+    // ── 5 PRECISE SCROLL FRAMES ─────────────────────────────────────────────
+
+    // Frame 0: Hero (p: 0.00 -> 0.18)
+    orbitTimeRef.current += delta * 0.55;
+    const heroOrbitRadius = 2.7;
+    const orbitX = Math.cos(orbitTimeRef.current) * heroOrbitRadius;
+    const orbitY = Math.sin(orbitTimeRef.current * 0.8) * 0.55;
+    const orbitZ = Math.sin(orbitTimeRef.current) * 1.8;
+
+    if (p < 0.18) {
+      // Stage 0: Hero — Moon orbits Earth; as user scrolls (0.02->0.18), Earth moves up/fades out, Moon glides left
+      const t = p / 0.18;
+      targetX = THREE.MathUtils.lerp(orbitX, -2.3 * xResponsive, t);
       targetY = THREE.MathUtils.lerp(orbitY, 0.0, t);
       targetZ = THREE.MathUtils.lerp(orbitZ, 0.4, t);
-      targetScale = THREE.MathUtils.lerp(0.85, 1.55, t);
-      targetRotX = THREE.MathUtils.lerp(0.1, 1.15, t);
-      targetRotZ = THREE.MathUtils.lerp(0, 0.18, t);
+      targetScale = THREE.MathUtils.lerp(0.85, 1.6, t);
+      targetRotX = THREE.MathUtils.lerp(0.1, 1.18, t);
+      targetRotZ = THREE.MathUtils.lerp(0, 0.2, t);
 
-      earthOpacity = Math.max(0, 1 - t * 1.4);
-      earthZ = THREE.MathUtils.lerp(-0.8, -7.0, t);
-    } else if (p < 0.48) {
-      // Stage 1: Section 01 — The South Pole Paradox (Moon at LEFT)
+      earthOpacity = Math.max(0, 1 - t * 1.5);
+      earthY = THREE.MathUtils.lerp(0.1, 2.0, t);
+      earthZ = THREE.MathUtils.lerp(-0.8, -6.0, t);
+    } else if (p < 0.35) {
+      // Frame 1: Section 01 / THE SOUTH POLE PARADOX (Moon rock-solid on LEFT)
       earthOpacity = 0;
-      targetX = -2.5 * xResponsive;
+      targetX = -2.3 * xResponsive;
       targetY = 0.0;
       targetZ = 0.4;
       targetScale = 1.6;
-      // Tilt Moon so South Pole faces viewer with grazing 1.54° sunlight
       targetRotX = 1.18;
       targetRotZ = 0.2;
 
-      // Flag & Beacon visible during Section 01
-      const flagFadeIn = Math.min(1, Math.max(0, (p - 0.2) / 0.08));
-      const flagFadeOut = Math.min(1, Math.max(0, (0.48 - p) / 0.08));
-      flagAlpha = Math.min(flagFadeIn, flagFadeOut);
-    } else if (p < 0.54) {
-      // Transition from Left to Right
+      // Flag & South Pole beacon fully active
+      const flagIn = Math.min(1, Math.max(0, (p - 0.18) / 0.04));
+      const flagOut = Math.min(1, Math.max(0, (0.37 - p) / 0.04));
+      flagAlpha = Math.min(flagIn, flagOut);
+    } else if (p < 0.44) {
+      // Transition from Frame 1 to Frame 2 (Crossing from Left to Right, finishes by 0.44)
       earthOpacity = 0;
-      const t = (p - 0.48) / 0.06;
+      const t = (p - 0.35) / 0.09;
       const easeT = t * t * (3 - 2 * t);
-      targetX = THREE.MathUtils.lerp(-2.5 * xResponsive, 2.4 * xResponsive, easeT);
+      targetX = THREE.MathUtils.lerp(-2.3 * xResponsive, 2.3 * xResponsive, easeT);
       targetY = THREE.MathUtils.lerp(0.0, -0.05, easeT);
       targetZ = THREE.MathUtils.lerp(0.4, 0.5, easeT);
       targetScale = THREE.MathUtils.lerp(1.6, 1.5, easeT);
       targetRotX = THREE.MathUtils.lerp(1.18, 0.35, easeT);
       targetRotZ = THREE.MathUtils.lerp(0.2, -0.15, easeT);
-    } else if (p < 0.76) {
-      // Stage 2: Section 02 — Vacuum Horizons & Earth Libration (Moon at RIGHT)
+    } else if (p < 0.58) {
+      // Frame 2: Section 02 / VACUUM HORIZONS & EARTH LIBRATION (Moon rock-solid on RIGHT)
       earthOpacity = 0;
-      targetX = 2.4 * xResponsive;
+      targetX = 2.3 * xResponsive;
       targetY = -0.05;
       targetZ = 0.5;
       targetScale = 1.5;
       targetRotX = 0.35;
       targetRotZ = -0.15;
 
-      // Satellite orbiting with communication beam visible
-      const satFadeIn = Math.min(1, Math.max(0, (p - 0.54) / 0.06));
-      const satFadeOut = Math.min(1, Math.max(0, (0.76 - p) / 0.06));
-      satAlpha = Math.min(satFadeIn, satFadeOut);
-    } else if (p < 0.84) {
-      // Transition from Right to Center Macro Close-up
+      // Relay Satellite orbiting on the right with cyan laser beam active
+      const satIn = Math.min(1, Math.max(0, (p - 0.42) / 0.04));
+      const satOut = Math.min(1, Math.max(0, (0.60 - p) / 0.04));
+      satAlpha = Math.min(satIn, satOut);
+    } else if (p < 0.65) {
+      // Transition from Frame 2 to Frame 3 (Moving to lower right/center to frame 89% vs 12% cards)
       earthOpacity = 0;
-      const t = (p - 0.76) / 0.08;
+      const t = (p - 0.58) / 0.07;
       const easeT = t * t * (3 - 2 * t);
-      targetX = THREE.MathUtils.lerp(2.4 * xResponsive, 0.0, easeT);
-      targetY = THREE.MathUtils.lerp(-0.05, -0.45, easeT);
-      targetZ = THREE.MathUtils.lerp(0.5, 1.15, easeT);
-      targetScale = THREE.MathUtils.lerp(1.5, 2.3, easeT);
-      targetRotX = THREE.MathUtils.lerp(0.35, 0.5, easeT);
-      targetRotZ = THREE.MathUtils.lerp(-0.15, 0, easeT);
+      targetX = THREE.MathUtils.lerp(2.3 * xResponsive, 0.95 * xResponsive, easeT);
+      targetY = THREE.MathUtils.lerp(-0.05, -0.65, easeT);
+      targetZ = THREE.MathUtils.lerp(0.5, 0.65, easeT);
+      targetScale = THREE.MathUtils.lerp(1.5, 1.55, easeT);
+      targetRotX = THREE.MathUtils.lerp(0.35, 0.40, easeT);
+      targetRotZ = THREE.MathUtils.lerp(-0.15, 0.05, easeT);
+    } else if (p < 0.82) {
+      // Frame 3: Section 03 / AGILE MISSION PLANNING (CLPS Lander & 500m Dispersion Targets)
+      earthOpacity = 0;
+      targetX = 0.95 * xResponsive;
+      targetY = -0.65;
+      targetZ = 0.65;
+      targetScale = 1.55;
+      targetRotX = 0.40;
+      targetRotZ = 0.05;
+
+      // 3D CLPS Lander, Green 89% Ridge target, Red 12% Crater hazard & scanning cone active
+      const landerIn = Math.min(1, Math.max(0, (p - 0.62) / 0.04));
+      const landerOut = Math.min(1, Math.max(0, (0.85 - p) / 0.04));
+      landerAlpha = Math.min(landerIn, landerOut);
+    } else if (p < 0.90) {
+      // Transition from Frame 3 to Frame 4 (Transition to Dead Center Macro Horizon)
+      earthOpacity = 0;
+      const t = (p - 0.82) / 0.08;
+      const easeT = t * t * (3 - 2 * t);
+      targetX = THREE.MathUtils.lerp(0.95 * xResponsive, 0.0, easeT);
+      targetY = THREE.MathUtils.lerp(-0.65, -0.55, easeT);
+      targetZ = THREE.MathUtils.lerp(0.65, 1.25, easeT);
+      targetScale = THREE.MathUtils.lerp(1.55, 2.4, easeT);
+      targetRotX = THREE.MathUtils.lerp(0.40, 0.55, easeT);
+      targetRotZ = THREE.MathUtils.lerp(0.05, 0.0, easeT);
     } else {
-      // Stage 3: Section 03 — Agile Mission Planning (CENTER MACRO)
+      // Frame 4: Section 04 / Blurred Simulator Preview (Dead Center Macro Horizon Close-Up)
       earthOpacity = 0;
       targetX = 0.0;
-      targetY = -0.45;
-      targetZ = 1.15;
-      targetScale = 2.3;
-      targetRotX = 0.5;
-      targetRotZ = 0;
+      targetY = -0.55;
+      targetZ = 1.25;
+      targetScale = 2.4;
+      targetRotX = 0.55;
+      targetRotZ = 0.0;
     }
 
     // Apply smooth transforms to Moon
@@ -380,6 +640,7 @@ function CelestialScrollExperience({
 
     flagAlphaRef.current = flagAlpha;
     satAlphaRef.current = satAlpha;
+    landerAlphaRef.current = landerAlpha;
   });
 
   return (
@@ -445,6 +706,9 @@ function CelestialScrollExperience({
 
         {/* Section 02: 3D Orbiting Relay Satellite & Communication Beam */}
         <RelaySatellite alphaRef={satAlphaRef} />
+
+        {/* Section 03: 3D CLPS Lander & 500m Dispersion Target Rings */}
+        <CLPSLanderAndDispersionTargets alphaRef={landerAlphaRef} />
       </group>
     </>
   );

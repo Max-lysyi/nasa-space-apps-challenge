@@ -34,7 +34,7 @@ export function ScrollIntro({ onLaunch, workspacePreview }: ScrollIntroProps) {
   return (
     <div className="relative">
       {/* Hero Section */}
-      <section className="relative h-screen flex flex-col items-center justify-center overflow-hidden">
+      <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -86,7 +86,7 @@ export function ScrollIntro({ onLaunch, workspacePreview }: ScrollIntroProps) {
       </section>
 
       {/* Card 1 — THE SOUTH POLE PARADOX */}
-      <section className="max-w-6xl mx-auto px-8 md:px-16 min-h-[85vh] flex flex-col justify-center py-24">
+      <section className="max-w-6xl mx-auto px-8 md:px-16 min-h-screen flex flex-col justify-center py-16">
         <IntroCard>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* 3D Moon Placeholder Spacer (Left Column) — lets the 3D Moon with Artemis Flag shine through */}
@@ -125,7 +125,7 @@ export function ScrollIntro({ onLaunch, workspacePreview }: ScrollIntroProps) {
       </section>
 
       {/* Card 2 — VACUUM HORIZONS */}
-      <section className="max-w-6xl mx-auto px-8 md:px-16 min-h-[85vh] flex flex-col justify-center py-24">
+      <section className="max-w-6xl mx-auto px-8 md:px-16 min-h-screen flex flex-col justify-center py-16">
         <IntroCard>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16 items-center">
             <div className="order-2 md:order-1">
@@ -166,7 +166,7 @@ export function ScrollIntro({ onLaunch, workspacePreview }: ScrollIntroProps) {
       </section>
 
       {/* Card 3 — AGILE MISSION PLANNING */}
-      <section className="max-w-6xl mx-auto px-8 md:px-16 min-h-[85vh] flex flex-col justify-center py-24">
+      <section className="max-w-6xl mx-auto px-8 md:px-16 min-h-screen flex flex-col justify-center py-16">
         <IntroCard>
           <div className="max-w-4xl mx-auto text-center">
             <div className="max-w-2xl mx-auto text-center mb-10">
@@ -253,7 +253,8 @@ export function ScrollIntro({ onLaunch, workspacePreview }: ScrollIntroProps) {
           </div>
         </IntroCard>
       </section>
-      <section className="max-w-6xl mx-auto px-8 md:px-16 min-h-[85vh] flex flex-col justify-center py-24">
+      {/* Card 4 — TACTICAL HUD WORKSPACE PREVIEW */}
+      <section className="max-w-6xl mx-auto px-8 md:px-16 min-h-screen flex flex-col justify-center py-16">
         <IntroCard>
           {/* Blurred Non-Interactive 3D Workspace Preview */}
           {workspacePreview && (
