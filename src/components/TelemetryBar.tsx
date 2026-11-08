@@ -48,7 +48,7 @@ export function TelemetryBar({
 
   return (
     <div className="fixed top-0 left-0 w-full z-50 glass-panel rounded-none border-x-0 border-t-0 bg-space-black/80 backdrop-blur-xl">
-      <div className="max-w-[1920px] mx-auto pt-4 pb-4 px-6 flex items-center gap-4 overflow-x-auto text-xs">
+      <div className="max-w-[1920px] mx-auto h-14 px-6 py-2.5 flex items-center justify-between gap-6 overflow-x-auto text-xs">
         {/* Title */}
         <div className="flex-shrink-0 mr-2">
           <h1 className="text-sm font-bold tracking-wide text-white">

@@ -122,7 +122,7 @@ function NavigatorContent() {
         />
 
         {/* Main Content Grid */}
-        <div className="p-6 pt-24 pb-52 max-w-[1920px] mx-auto">
+        <div className="pt-16 pb-28 px-6 max-w-[1600px] mx-auto">
           {/* Site Selector with Curated + Custom coordinate input */}
           <SiteSelector
             selectedSite={selectedSite}
@@ -132,7 +132,7 @@ function NavigatorContent() {
 
           {showComparison ? (
             /* Side-by-Side Scenario Comparison */
-            <div className="mt-6">
+            <div className="mt-4">
               <ScenarioComparison
                 siteA={selectedSite}
                 dateA={selectedDate}
@@ -141,9 +141,9 @@ function NavigatorContent() {
             </div>
           ) : (
             /* Main Visualization Grid */
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mt-4">
               {/* 3D Lunar Surface View - 8 columns */}
-              <div className="lg:col-span-8 h-[640px] rounded-xl overflow-hidden glass-panel">
+              <div className="lg:col-span-8 h-[600px] rounded-xl overflow-hidden glass-panel">
                 <LunarSurface3D
                   site={selectedSite}
                   ephemeris={ephemeris}
@@ -152,9 +152,9 @@ function NavigatorContent() {
               </div>
 
               {/* Right column: 360° Horizon Sky View + 2D Regional Map - 4 columns */}
-              <div className="lg:col-span-4 flex flex-col gap-6">
+              <div className="lg:col-span-4 flex flex-col gap-5">
                 {/* 360° Local Horizon Sky-Dome */}
-                <div className="h-[310px] glass-panel rounded-xl overflow-hidden p-4">
+                <div className="h-[290px] glass-panel rounded-xl overflow-hidden">
                   <HorizonSkyView
                     site={selectedSite}
                     ephemeris={ephemeris}
@@ -164,7 +164,7 @@ function NavigatorContent() {
                 </div>
 
                 {/* 2D Regional Map with Crater Topography & Sun Vector */}
-                <div className="h-[306px] glass-panel rounded-xl overflow-hidden p-4">
+                <div className="h-[290px] glass-panel rounded-xl overflow-hidden">
                   <RegionalMap2D
                     selectedSite={selectedSite}
                     onSiteChange={handleSiteChange}

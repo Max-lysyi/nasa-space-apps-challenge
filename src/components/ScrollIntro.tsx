@@ -35,7 +35,7 @@ export function ScrollIntro({ onLaunch }: ScrollIntroProps) {
       {/* Fixed "Launch" button */}
       <button
         onClick={onLaunch}
-        className="fixed top-6 right-6 z-50 glass-panel px-5 py-2.5 flex items-center gap-2 text-sm font-medium text-accent-gold hover:text-white transition-colors animate-pulse-glow cursor-pointer rounded-full"
+        className="fixed top-16 right-6 z-40 glass-panel px-5 py-2.5 flex items-center gap-2 text-sm font-medium text-accent-gold hover:text-white transition-colors animate-pulse-glow cursor-pointer rounded-full"
       >
         <Rocket className="w-4 h-4" />
         Launch Mission Navigator
@@ -99,9 +99,9 @@ export function ScrollIntro({ onLaunch }: ScrollIntroProps) {
       </section>
 
       {/* Card 1 — THE SOUTH POLE PARADOX */}
-      <section className="min-h-screen flex items-center justify-center px-6 py-24">
+      <section className="max-w-6xl mx-auto px-8 md:px-16 min-h-[85vh] flex flex-col justify-center py-24">
         <IntroCard>
-          <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Visual — Moon with dramatic terminator */}
             <div className="relative flex items-center justify-center">
               <div className="w-64 h-64 md:w-80 md:h-80 rounded-full relative overflow-hidden">
@@ -160,9 +160,9 @@ export function ScrollIntro({ onLaunch }: ScrollIntroProps) {
       </section>
 
       {/* Card 2 — VACUUM HORIZONS */}
-      <section className="min-h-screen flex items-center justify-center px-6 py-24">
+      <section className="max-w-6xl mx-auto px-8 md:px-16 min-h-[85vh] flex flex-col justify-center py-24">
         <IntroCard>
-          <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16 items-center">
             <div className="order-2 md:order-1">
               <p className="text-accent-blue text-sm font-mono tracking-[0.2em] uppercase mb-3">
                 02 / Why Terrain Matters
@@ -239,34 +239,36 @@ export function ScrollIntro({ onLaunch }: ScrollIntroProps) {
       </section>
 
       {/* Card 3 — AGILE MISSION PLANNING */}
-      <section className="min-h-screen flex items-center justify-center px-6 py-24">
+      <section className="max-w-6xl mx-auto px-8 md:px-16 min-h-[85vh] flex flex-col justify-center py-24">
         <IntroCard>
           <div className="max-w-4xl mx-auto text-center">
-            <p className="text-accent-emerald text-sm font-mono tracking-[0.2em] uppercase mb-3">
-              03 / Why This Tool Exists
-            </p>
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 tracking-tight">
-              AGILE MISSION PLANNING
-            </h2>
-            <p className="text-text-secondary leading-relaxed max-w-2xl mx-auto mb-10">
-              Hardware delays, launch window slips, and landing dispersion
-              ellipses mean plans change constantly. A{" "}
-              <span className="text-white font-semibold">500-meter shift</span>{" "}
-              off a ridge into a crater, or a{" "}
-              <span className="text-white font-semibold">2-week delay</span>,
-              can turn{" "}
-              <span className="text-accent-emerald font-semibold">
-                89% sunlight
-              </span>{" "}
-              into{" "}
-              <span className="text-accent-red font-semibold">
-                12% shadow
-              </span>
-              .
-            </p>
+            <div className="max-w-2xl mx-auto text-center mb-10">
+              <p className="text-accent-emerald text-sm font-mono tracking-[0.2em] uppercase mb-3">
+                03 / Why This Tool Exists
+              </p>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6 tracking-tight">
+                AGILE MISSION PLANNING
+              </h2>
+              <p className="text-text-secondary leading-relaxed">
+                Hardware delays, launch window slips, and landing dispersion
+                ellipses mean plans change constantly. A{" "}
+                <span className="text-white font-semibold">500-meter shift</span>{" "}
+                off a ridge into a crater, or a{" "}
+                <span className="text-white font-semibold">2-week delay</span>,
+                can turn{" "}
+                <span className="text-accent-emerald font-semibold">
+                  89% sunlight
+                </span>{" "}
+                into{" "}
+                <span className="text-accent-red font-semibold">
+                  12% shadow
+                </span>
+                .
+              </p>
+            </div>
 
             {/* Before / After gauges */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-8 mb-10">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-10">
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 whileInView={{ scale: 1, opacity: 1 }}
@@ -322,7 +324,7 @@ export function ScrollIntro({ onLaunch }: ScrollIntroProps) {
 
             <button
               onClick={onLaunch}
-              className="inline-flex items-center gap-3 px-8 py-4 bg-accent-gold/20 border border-accent-gold/40 rounded-full text-accent-gold font-semibold text-lg hover:bg-accent-gold/30 transition-colors cursor-pointer"
+              className="mt-8 inline-flex items-center gap-3 px-8 py-4 bg-accent-gold/20 border border-accent-gold/40 rounded-full text-accent-gold font-semibold text-lg hover:bg-accent-gold/30 transition-colors cursor-pointer"
             >
               <Rocket className="w-5 h-5" />
               Launch Mission Navigator

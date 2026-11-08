@@ -263,7 +263,7 @@ export function HorizonSkyView({
   }, [draw]);
 
   return (
-    <div className="relative w-full h-full rounded-xl overflow-hidden">
+    <div className="relative w-full h-full rounded-xl overflow-hidden p-4 md:p-5">
       <canvas
         ref={canvasRef}
         className="w-full h-full rounded-xl"

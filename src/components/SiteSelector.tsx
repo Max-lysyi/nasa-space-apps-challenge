@@ -64,7 +64,7 @@ export function SiteSelector({
       {/* Selected Site Display */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full glass-panel rounded-xl p-4 md:p-5 flex items-center gap-4 hover:bg-white/[0.06] transition-colors cursor-pointer text-left"
+        className="w-full glass-panel rounded-xl px-5 py-3.5 mb-4 flex items-center gap-4 hover:bg-white/[0.06] transition-colors cursor-pointer text-left"
       >
         {categoryIcons[selectedSite.category]}
         <div className="flex-1 min-w-0">
@@ -99,7 +99,7 @@ export function SiteSelector({
                 onSiteChange(site);
                 setIsOpen(false);
               }}
-              className={`w-full text-left px-3 py-2.5 rounded-xl flex items-center gap-3 transition-colors cursor-pointer ${
+              className={`w-full text-left px-5 py-3.5 rounded-xl flex items-center gap-3 transition-colors cursor-pointer ${
                 selectedSite.id === site.id
                   ? "bg-white/10"
                   : "hover:bg-white/5"
@@ -130,7 +130,7 @@ export function SiteSelector({
             {!showCustom ? (
               <button
                 onClick={() => setShowCustom(true)}
-                className="w-full text-left px-3 py-2.5 rounded-xl flex items-center gap-3 hover:bg-white/5 transition-colors cursor-pointer"
+                className="w-full text-left px-5 py-3.5 rounded-xl flex items-center gap-3 hover:bg-white/5 transition-colors cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5 text-accent-blue" />
                 <span className="text-sm text-accent-blue font-medium">

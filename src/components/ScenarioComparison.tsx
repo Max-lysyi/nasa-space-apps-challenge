@@ -277,9 +277,9 @@ export function ScenarioComparison({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="pt-16 pb-28 px-6 max-w-[1600px] mx-auto">
       {/* Quick shift buttons */}
-      <div className="glass-panel rounded-xl p-4 flex flex-wrap items-center gap-3">
+      <div className="glass-panel rounded-xl px-4 py-3 mb-4 flex flex-wrap items-center gap-3">
         <span className="text-xs text-text-muted font-medium">Quick comparison:</span>
         <button onClick={() => quickShift("+7d")} className="px-3 py-1.5 text-xs rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer text-text-secondary">
           +7 Day Delay
@@ -305,9 +305,9 @@ export function ScenarioComparison({
       </div>
 
       {/* Side-by-Side Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
         {/* Scenario A */}
-        <div className="glass-panel rounded-xl p-6 space-y-4">
+        <div className="glass-panel rounded-xl p-5 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-accent-gold">SCENARIO A</h3>
             <ViabilityBadge viability={scenarioA.viability} />
@@ -393,7 +393,7 @@ export function ScenarioComparison({
         </div>
 
         {/* Scenario B */}
-        <div className="glass-panel rounded-xl p-6 space-y-4">
+        <div className="glass-panel rounded-xl p-5 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-accent-blue">SCENARIO B</h3>
             <ViabilityBadge viability={scenarioB.viability} />
@@ -491,7 +491,7 @@ export function ScenarioComparison({
       </div>
 
       {/* Comparative Metric Bars */}
-      <div className="glass-panel rounded-xl p-6 space-y-4">
+      <div className="glass-panel rounded-xl p-5 space-y-4">
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-xs font-bold text-white">COMPARATIVE METRICS</h3>
           <div className="flex items-center gap-4 text-[10px]">
@@ -546,7 +546,7 @@ export function ScenarioComparison({
         />
 
         {skillLevel === "educator" && (
-          <div className="mt-4 p-4 rounded-xl bg-accent-blue/5 border border-accent-blue/10">
+          <div className="mt-4 p-5 rounded-xl bg-accent-blue/5 border border-accent-blue/10">
             <p className="text-xs text-accent-blue font-medium mb-1">
               💡 Why does this matter?
             </p>

@@ -109,7 +109,7 @@ export function LunarApp() {
         />
 
         {/* Main Content Grid */}
-        <div className="p-6 pt-24 pb-52 max-w-[1920px] mx-auto">
+        <div className="pt-16 pb-28 px-6 max-w-[1600px] mx-auto">
           {/* Site Selector */}
           <SiteSelector
             selectedSite={selectedSite}
@@ -118,7 +118,7 @@ export function LunarApp() {
           />
 
           {showComparison ? (
-            <div className="mt-6">
+            <div className="mt-4">
               <ScenarioComparison
                 siteA={selectedSite}
                 dateA={selectedDate}
@@ -127,9 +127,9 @@ export function LunarApp() {
             </div>
           ) : (
             /* Main Visualization Grid */
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mt-4">
               {/* 3D Surface View - 8 columns */}
-              <div className="lg:col-span-8 h-[640px] rounded-xl overflow-hidden glass-panel">
+              <div className="lg:col-span-8 h-[600px] rounded-xl overflow-hidden glass-panel">
                 <LunarSurface3D
                   site={selectedSite}
                   ephemeris={ephemeris}
@@ -138,9 +138,9 @@ export function LunarApp() {
               </div>
 
               {/* Right column: Horizon + Map stacked - 4 columns */}
-              <div className="lg:col-span-4 flex flex-col gap-6">
+              <div className="lg:col-span-4 flex flex-col gap-5">
                 {/* 360° Horizon Sky View */}
-                <div className="h-[310px] glass-panel rounded-xl overflow-hidden p-4">
+                <div className="h-[290px] glass-panel rounded-xl overflow-hidden">
                   <HorizonSkyView
                     site={selectedSite}
                     ephemeris={ephemeris}
@@ -150,7 +150,7 @@ export function LunarApp() {
                 </div>
 
                 {/* 2D Regional Map */}
-                <div className="h-[306px] glass-panel rounded-xl overflow-hidden p-4">
+                <div className="h-[290px] glass-panel rounded-xl overflow-hidden">
                   <RegionalMap2D
                     selectedSite={selectedSite}
                     onSiteChange={handleSiteChange}
