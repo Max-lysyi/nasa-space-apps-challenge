@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useMemo, useEffect, Suspense } from "react";
 import dynamic from "next/dynamic";
+import { motion, AnimatePresence } from "framer-motion";
 import type {
   LandingSite,
   SkillLevel,
@@ -43,7 +44,10 @@ const LunarSurface3D = dynamic(
 function NavigatorContent() {
   const workspaceRef = useRef<HTMLDivElement>(null);
 
-  // ── Core state ────────────────────────────────────────────────────────────
+  // ── Core view & simulation state ──────────────────────────────────────────
+  // Simulator is false by default: user starts in immersive full-screen Scrollytelling mode
+  const [isSimulatorActive, setIsSimulatorActive] = useState(false);
+
   const [selectedSite, setSelectedSite] = useState<LandingSite>(
     CURATED_SITES[0],
   );
@@ -55,7 +59,6 @@ function NavigatorContent() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeed>("1h");
   const [showComparison, setShowComparison] = useState(false);
-  const [showIntro, setShowIntro] = useState(true);
 
   // ── Computed ephemeris & metrics (memoized) ──────────────────────────────
   const ephemeris: EphemerisResult = useMemo(
@@ -90,10 +93,15 @@ function NavigatorContent() {
     return () => clearInterval(interval);
   }, [isPlaying, playbackSpeed]);
 
-  // ── Interaction Handlers ──────────────────────────────────────────────────
-  const scrollToWorkspace = useCallback(() => {
-    setShowIntro(false);
-    workspaceRef.current?.scrollIntoView({ behavior: "smooth" });
+  // ── Mode transitions: enter & exit simulator ──────────────────────────────
+  const handleLaunchSimulator = useCallback(() => {
+    setIsSimulatorActive(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
+  const handleExitToLanding = useCallback(() => {
+    setIsSimulatorActive(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
   const handleDateChange = useCallback((d: Date) => {
@@ -104,90 +112,135 @@ function NavigatorContent() {
     setSelectedSite(site);
   }, []);
 
-  return (
-    <div className="relative min-h-screen bg-space-black">
-      {/* ── Apple-style Scroll-Driven Intro ───────────────────────────────── */}
-      {showIntro && <ScrollIntro onLaunch={scrollToWorkspace} />}
-
-      {/* ── Main Tactical HUD Workspace ──────────────────────────────────── */}
-      <div ref={workspaceRef} className="relative min-h-screen">
-        {/* Top Dynamic Telemetry Bar */}
-        <TelemetryBar
+  // ── Reusable Workspace Visuals (shared between blurred preview and live HUD)
+  const workspaceVisuals = (
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      {/* 3D Lunar Surface View - 8 columns */}
+      <div className="lg:col-span-8 h-[600px] rounded-xl overflow-hidden glass-panel">
+        <LunarSurface3D
+          site={selectedSite}
           ephemeris={ephemeris}
-          metrics={cycleMetrics}
-          skillLevel={skillLevel}
-          onSkillLevelChange={setSkillLevel}
-          onShowComparison={() => setShowComparison(!showComparison)}
-          showComparison={showComparison}
+          date={selectedDate}
         />
+      </div>
 
-        {/* Main Content Grid */}
-        <div className="pt-16 pb-28 px-6 max-w-[1600px] mx-auto">
-          {/* Site Selector with Curated + Custom coordinate input */}
-          <SiteSelector
-            selectedSite={selectedSite}
-            onSiteChange={handleSiteChange}
+      {/* Right column: 360° Horizon Sky View + 2D Regional Map - 4 columns */}
+      <div className="lg:col-span-4 flex flex-col gap-5">
+        {/* 360° Local Horizon Sky-Dome */}
+        <div className="h-[290px] glass-panel rounded-xl overflow-hidden">
+          <HorizonSkyView
+            site={selectedSite}
+            ephemeris={ephemeris}
+            timeline={timeline}
             skillLevel={skillLevel}
           />
+        </div>
 
-          {showComparison ? (
-            /* Side-by-Side Scenario Comparison */
-            <div className="mt-4">
-              <ScenarioComparison
-                siteA={selectedSite}
-                dateA={selectedDate}
+        {/* 2D Regional Map with Crater Topography & Sun Vector */}
+        <div className="h-[290px] glass-panel rounded-xl overflow-hidden">
+          <RegionalMap2D
+            selectedSite={selectedSite}
+            onSiteChange={handleSiteChange}
+            ephemeris={ephemeris}
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="relative min-h-screen bg-space-black text-text-primary">
+      <AnimatePresence mode="wait">
+        {!isSimulatorActive ? (
+          /* ── Scrollytelling Landing Page (100% immersive, no top/bottom bars) ── */
+          <motion.div
+            key="scrollytelling-landing"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.3 } }}
+            transition={{ duration: 0.5 }}
+          >
+            <ScrollIntro
+              onLaunch={handleLaunchSimulator}
+              workspacePreview={workspaceVisuals}
+            />
+          </motion.div>
+        ) : (
+          /* ── Active Interactive Mission Workspace (Full HUD + Controls) ─────── */
+          <motion.div
+            key="interactive-workspace"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.3 } }}
+            transition={{ duration: 0.4 }}
+            className="relative min-h-screen"
+          >
+            {/* Top Dynamic Telemetry Bar (Animated Slide-in) */}
+            <motion.div
+              initial={{ y: -60, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="fixed top-0 left-0 w-full z-50"
+            >
+              <TelemetryBar
+                ephemeris={ephemeris}
+                metrics={cycleMetrics}
+                skillLevel={skillLevel}
+                onSkillLevelChange={setSkillLevel}
+                onShowComparison={() => setShowComparison(!showComparison)}
+                showComparison={showComparison}
+                onExitToLanding={handleExitToLanding}
+              />
+            </motion.div>
+
+            {/* Main Interactive HUD Workspace */}
+            <div
+              ref={workspaceRef}
+              className="pt-16 pb-28 px-6 max-w-[1600px] mx-auto"
+            >
+              {/* Site Selector with Curated + Custom coordinate input */}
+              <SiteSelector
+                selectedSite={selectedSite}
+                onSiteChange={handleSiteChange}
                 skillLevel={skillLevel}
               />
-            </div>
-          ) : (
-            /* Main Visualization Grid */
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mt-4">
-              {/* 3D Lunar Surface View - 8 columns */}
-              <div className="lg:col-span-8 h-[600px] rounded-xl overflow-hidden glass-panel">
-                <LunarSurface3D
-                  site={selectedSite}
-                  ephemeris={ephemeris}
-                  date={selectedDate}
-                />
-              </div>
 
-              {/* Right column: 360° Horizon Sky View + 2D Regional Map - 4 columns */}
-              <div className="lg:col-span-4 flex flex-col gap-5">
-                {/* 360° Local Horizon Sky-Dome */}
-                <div className="h-[290px] glass-panel rounded-xl overflow-hidden">
-                  <HorizonSkyView
-                    site={selectedSite}
-                    ephemeris={ephemeris}
-                    timeline={timeline}
+              {showComparison ? (
+                /* Side-by-Side Scenario Comparison */
+                <div className="mt-4">
+                  <ScenarioComparison
+                    siteA={selectedSite}
+                    dateA={selectedDate}
                     skillLevel={skillLevel}
                   />
                 </div>
-
-                {/* 2D Regional Map with Crater Topography & Sun Vector */}
-                <div className="h-[290px] glass-panel rounded-xl overflow-hidden">
-                  <RegionalMap2D
-                    selectedSite={selectedSite}
-                    onSiteChange={handleSiteChange}
-                    ephemeris={ephemeris}
-                  />
-                </div>
-              </div>
+              ) : (
+                /* Active Visualization Grid */
+                <div className="mt-4">{workspaceVisuals}</div>
+              )}
             </div>
-          )}
-        </div>
 
-        {/* Bottom Multi-Track Timeline Controller */}
-        <TimelineController
-          date={selectedDate}
-          onDateChange={handleDateChange}
-          timeline={timeline}
-          isPlaying={isPlaying}
-          onPlayToggle={() => setIsPlaying(!isPlaying)}
-          playbackSpeed={playbackSpeed}
-          onSpeedChange={setPlaybackSpeed}
-          skillLevel={skillLevel}
-        />
-      </div>
+            {/* Bottom Multi-Track Timeline Controller (Animated Slide-up) */}
+            <motion.div
+              initial={{ y: 60, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="fixed bottom-0 left-0 right-0 z-40"
+            >
+              <TimelineController
+                date={selectedDate}
+                onDateChange={handleDateChange}
+                timeline={timeline}
+                isPlaying={isPlaying}
+                onPlayToggle={() => setIsPlaying(!isPlaying)}
+                playbackSpeed={playbackSpeed}
+                onSpeedChange={setPlaybackSpeed}
+                skillLevel={skillLevel}
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

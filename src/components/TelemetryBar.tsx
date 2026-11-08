@@ -20,6 +20,7 @@ interface TelemetryBarProps {
   onSkillLevelChange: (level: SkillLevel) => void;
   onShowComparison: () => void;
   showComparison: boolean;
+  onExitToLanding?: () => void;
 }
 
 function formatTimer(hours: number | null): string {
@@ -40,6 +41,7 @@ export function TelemetryBar({
   onSkillLevelChange,
   onShowComparison,
   showComparison,
+  onExitToLanding,
 }: TelemetryBarProps) {
   const e = ephemeris;
   const solarFlux = Math.round(
@@ -49,13 +51,31 @@ export function TelemetryBar({
   return (
     <div className="fixed top-0 left-0 w-full z-50 glass-panel rounded-none border-x-0 border-t-0 bg-space-black/80 backdrop-blur-xl">
       <div className="max-w-[1920px] mx-auto h-14 px-6 py-2.5 flex items-center justify-between gap-6 overflow-x-auto text-xs">
-        {/* Title */}
-        <div className="flex-shrink-0 mr-2">
-          <h1 className="text-sm font-bold tracking-wide text-white">
-            LUNAR LANDING SITE NAVIGATOR
-          </h1>
-          <p className="text-[10px] text-text-muted">{e.site.shortName}</p>
-        </div>
+        {/* Title / Return to Landing Page */}
+        <button
+          onClick={onExitToLanding}
+          className="flex-shrink-0 mr-2 text-left cursor-pointer group flex items-center gap-2.5 transition-all outline-none"
+          title="Return to Landing Page"
+        >
+          <div className="w-7 h-7 rounded-lg bg-white/5 group-hover:bg-accent-gold/20 border border-white/10 group-hover:border-accent-gold/40 flex items-center justify-center transition-all flex-shrink-0">
+            <span className="text-xs group-hover:-translate-x-0.5 transition-transform text-text-muted group-hover:text-accent-gold font-bold">
+              ←
+            </span>
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-sm font-bold tracking-wide text-white group-hover:text-accent-gold transition-colors">
+                LUNAR LANDING SITE NAVIGATOR
+              </h1>
+              <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/10 text-text-muted group-hover:text-accent-gold transition-colors font-mono">
+                Home
+              </span>
+            </div>
+            <p className="text-[10px] text-text-muted group-hover:text-text-secondary transition-colors">
+              {e.site.shortName} · Click to exit
+            </p>
+          </div>
+        </button>
 
         <div className="w-px h-8 bg-white/10 flex-shrink-0" />
 

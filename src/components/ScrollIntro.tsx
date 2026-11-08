@@ -6,6 +6,7 @@ import { Rocket, Sun, Globe, ArrowDown, Zap } from "lucide-react";
 
 interface ScrollIntroProps {
   onLaunch: () => void;
+  workspacePreview?: React.ReactNode;
 }
 
 function IntroCard({
@@ -29,18 +30,9 @@ function IntroCard({
   );
 }
 
-export function ScrollIntro({ onLaunch }: ScrollIntroProps) {
+export function ScrollIntro({ onLaunch, workspacePreview }: ScrollIntroProps) {
   return (
     <div className="relative">
-      {/* Fixed "Launch" button */}
-      <button
-        onClick={onLaunch}
-        className="fixed top-16 right-6 z-40 glass-panel px-5 py-2.5 flex items-center gap-2 text-sm font-medium text-accent-gold hover:text-white transition-colors animate-pulse-glow cursor-pointer rounded-full"
-      >
-        <Rocket className="w-4 h-4" />
-        Launch Mission Navigator
-      </button>
-
       {/* Hero Section */}
       <section className="relative h-screen flex flex-col items-center justify-center overflow-hidden">
         {/* Star field background */}
@@ -83,6 +75,22 @@ export function ScrollIntro({ onLaunch }: ScrollIntroProps) {
             Visualize Sun &amp; Earth positions, power windows, and communication
             links — in seconds.
           </p>
+
+          {/* Quick launch button in Hero */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.8 }}
+            className="mt-8 flex justify-center"
+          >
+            <button
+              onClick={onLaunch}
+              className="group px-7 py-3.5 bg-accent-gold/20 hover:bg-accent-gold/30 border border-accent-gold/40 hover:border-accent-gold text-accent-gold font-semibold rounded-full text-sm cursor-pointer transition-all shadow-xl shadow-accent-gold/10 hover:scale-105 active:scale-95 flex items-center gap-2.5 animate-pulse-glow"
+            >
+              <Rocket className="w-4 h-4 text-accent-gold transition-transform group-hover:-translate-y-0.5" />
+              <span>Launch Mission Navigator</span>
+            </button>
+          </motion.div>
         </motion.div>
 
         <motion.div
@@ -322,13 +330,39 @@ export function ScrollIntro({ onLaunch }: ScrollIntroProps) {
               </motion.div>
             </div>
 
-            <button
-              onClick={onLaunch}
-              className="mt-8 inline-flex items-center gap-3 px-8 py-4 bg-accent-gold/20 border border-accent-gold/40 rounded-full text-accent-gold font-semibold text-lg hover:bg-accent-gold/30 transition-colors cursor-pointer"
-            >
-              <Rocket className="w-5 h-5" />
-              Launch Mission Navigator
-            </button>
+            {/* Blurred Non-Interactive 3D Workspace Preview */}
+            {workspacePreview && (
+              <div className="relative mt-12 w-full max-w-6xl mx-auto">
+                <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-space-deep/60 shadow-2xl">
+                  {/* Blurred and non-interactive preview container */}
+                  <div className="filter blur-[6px] opacity-65 pointer-events-none select-none transition-all duration-700 overflow-hidden max-h-[75vh]">
+                    {workspacePreview}
+                  </div>
+
+                  {/* Smooth radial dark gradient overlay */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      background:
+                        "radial-gradient(circle at center, rgba(3,5,8,0.3) 0%, rgba(3,5,8,0.7) 60%, rgba(3,5,8,0.95) 100%)",
+                    }}
+                  />
+
+                  {/* Centered glowing amber CTA button */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center z-30">
+                    <p className="text-xs uppercase tracking-widest text-text-muted mb-4 font-mono">
+                      Tactical HUD · Real-Time Ephemeris Ready
+                    </p>
+                    <button
+                      onClick={onLaunch}
+                      className="pointer-events-auto z-30 px-8 py-4 bg-gradient-to-r from-accent-gold/30 via-accent-gold/20 to-accent-gold/30 hover:from-accent-gold/40 hover:to-accent-gold/40 border border-accent-gold/60 rounded-full text-accent-gold font-bold text-lg shadow-2xl shadow-accent-gold/30 scale-105 hover:scale-110 transition-transform cursor-pointer flex items-center gap-3 animate-pulse-glow"
+                    >
+                      <span>🚀</span> Launch Mission Navigator
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </IntroCard>
       </section>
