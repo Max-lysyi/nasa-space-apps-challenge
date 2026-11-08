@@ -10,6 +10,7 @@ import type {
   EphemerisResult,
   LunarCycleMetrics,
   TimelinePoint,
+  SolarArrayType,
 } from "@/lib/types";
 import { CURATED_SITES } from "@/lib/landingSites";
 import {
@@ -26,6 +27,7 @@ import { HorizonSkyView } from "@/components/HorizonSkyView";
 import { RegionalMap2D } from "@/components/RegionalMap2D";
 import { TimelineController } from "@/components/TimelineController";
 import { ScenarioComparison } from "@/components/ScenarioComparison";
+import { JPLHorizonsModal } from "@/components/JPLHorizonsModal";
 
 // Dynamically import 3D canvas with SSR disabled to prevent WebGL/server pre-render mismatches
 const LunarSurface3D = dynamic(
@@ -67,6 +69,8 @@ function NavigatorContent() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeed>("1h");
   const [showComparison, setShowComparison] = useState(false);
+  const [solarArrayType, setSolarArrayType] = useState<SolarArrayType>("vertical");
+  const [showJplModal, setShowJplModal] = useState(false);
 
   // ── Computed ephemeris & metrics (memoized) ──────────────────────────────
   const ephemeris: EphemerisResult = useMemo(
@@ -129,6 +133,7 @@ function NavigatorContent() {
           site={selectedSite}
           ephemeris={ephemeris}
           date={selectedDate}
+          onSiteChange={handleSiteChange}
         />
       </div>
 
@@ -199,6 +204,7 @@ function NavigatorContent() {
                 onShowComparison={() => setShowComparison(!showComparison)}
                 showComparison={showComparison}
                 onExitToLanding={handleExitToLanding}
+                solarArrayType={solarArrayType}
               />
             </motion.div>
 
@@ -212,6 +218,75 @@ function NavigatorContent() {
                 selectedSite={selectedSite}
                 onSiteChange={handleSiteChange}
                 skillLevel={skillLevel}
+              />
+
+              {/* Engineering Sub-Bar: Solar Array Geometry & Battery Survival & JPL Horizons Live */}
+              <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 mb-4 glass-panel rounded-xl text-xs">
+                {/* Left: Solar Array Geometry Toggle */}
+                <div className="flex items-center gap-2">
+                  <span className="text-text-muted font-mono uppercase text-[10px] tracking-wider">
+                    Solar Geometry:
+                  </span>
+                  <div className="flex items-center bg-black/40 p-0.5 rounded-lg border border-white/10">
+                    <button
+                      onClick={() => setSolarArrayType("vertical")}
+                      className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+                        solarArrayType === "vertical"
+                          ? "bg-accent-gold/25 text-accent-gold border border-accent-gold/40 shadow-sm"
+                          : "text-text-muted hover:text-white"
+                      }`}
+                      title="Vertical tracking polar mast: captures grazing sunlight via cos(elevation) ≈ 100%"
+                    >
+                      <span>🗼</span>
+                      <span>Vertical Mast (Tracking)</span>
+                    </button>
+                    <button
+                      onClick={() => setSolarArrayType("horizontal")}
+                      className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+                        solarArrayType === "horizontal"
+                          ? "bg-accent-blue/25 text-accent-blue border border-accent-blue/40 shadow-sm"
+                          : "text-text-muted hover:text-white"
+                      }`}
+                      title="Flat horizontal deck array: grazing sunlight sin(elevation) yields only 2-5% power"
+                    >
+                      <span>☀️</span>
+                      <span>Horizontal Deck</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Center / Right: Shadow Survival Battery Metric & JPL Button */}
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/5 border border-white/10 font-mono text-[11px]">
+                    <span>🔋</span>
+                    <span className="text-text-muted">Survival Battery:</span>
+                    <span className="text-white font-semibold">
+                      {(cycleMetrics.longestShadowDuration * 0.25).toFixed(1)} kWh
+                    </span>
+                    <span className="text-text-muted text-[10px]">
+                      (250W heater · {cycleMetrics.longestShadowDuration.toFixed(0)}h shadow)
+                    </span>
+                  </div>
+
+                  {/* NASA JPL Horizons Live Modal Button */}
+                  <button
+                    onClick={() => setShowJplModal(true)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent-blue/15 hover:bg-accent-blue/25 text-accent-blue border border-accent-blue/30 text-xs font-semibold transition-all cursor-pointer shadow-sm hover:scale-105 active:scale-95"
+                    title="Query official NASA JPL Horizons REST API"
+                  >
+                    <span>🛰️</span>
+                    <span>JPL Horizons Live</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* JPL Horizons Live Telemetry Modal */}
+              <JPLHorizonsModal
+                isOpen={showJplModal}
+                onClose={() => setShowJplModal(false)}
+                site={selectedSite}
+                date={selectedDate}
+                analyticalEphem={ephemeris}
               />
 
               {showComparison ? (

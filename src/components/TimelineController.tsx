@@ -7,6 +7,7 @@ import {
   SkipForward,
   SkipBack,
   Calendar,
+  Zap,
 } from "lucide-react";
 import type { TimelinePoint, PlaybackSpeed, SkillLevel } from "@/lib/types";
 import { HOURS_PER_LUNAR_CYCLE, MS_PER_HOUR } from "@/lib/constants";
@@ -266,6 +267,37 @@ export function TimelineController({
               </button>
             ))}
           </div>
+
+          {/* Optimal Landing Window Button */}
+          <button
+            onClick={() => {
+              if (!timeline || timeline.length === 0) return;
+              let bestScore = -Infinity;
+              let bestPoint = timeline[0];
+              for (const pt of timeline) {
+                let score = 0;
+                if (pt.isSunVisible && pt.isEarthVisible) {
+                  score = 1000 + pt.sunElevation * 15 + pt.earthElevation * 2;
+                } else if (pt.isSunVisible) {
+                  score = 100 + pt.sunElevation * 10;
+                } else if (pt.isEarthVisible) {
+                  score = 50 + pt.earthElevation * 2;
+                } else {
+                  score = pt.sunElevation;
+                }
+                if (score > bestScore) {
+                  bestScore = score;
+                  bestPoint = pt;
+                }
+              }
+              onDateChange(bestPoint.timestamp);
+            }}
+            className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-accent-emerald/15 hover:bg-accent-emerald/25 text-accent-emerald border border-accent-emerald/30 transition-all cursor-pointer shadow-sm hover:scale-105 active:scale-95"
+            title="Auto-scan lunar cycle and jump to optimal simultaneous Sun + DTE landing window"
+          >
+            <Zap className="w-3 h-3 text-accent-emerald" />
+            <span>Optimal Window</span>
+          </button>
 
           <div className="flex-1" />
 

@@ -107,5 +107,6 @@ export interface MissionViability {
 
 export type SkillLevel = "planner" | "educator";
 export type PlaybackSpeed = "1h" | "24h" | "cycle";
-export type ViewMode = "orbital" | "surface";
+export type ViewMode = "orbital" | "surface" | "globe";
+export type SolarArrayType = "vertical" | "horizontal";
 

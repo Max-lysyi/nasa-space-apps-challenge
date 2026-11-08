@@ -64,7 +64,7 @@ function clamp(v: number, lo: number, hi: number): number {
 // The sub-solar longitude sweeps 360° per synodic period (29.53 d).
 // The sub-solar latitude oscillates ±1.5424° with the draconic month (27.21 d).
 
-function subSolarPoint(date: Date): { latDeg: number; lonDeg: number } {
+export function subSolarPoint(date: Date): { latDeg: number; lonDeg: number } {
   const d = daysSinceNewMoon(date);
 
   // Sub-solar longitude: at New Moon the Sun and Moon are on the same side,

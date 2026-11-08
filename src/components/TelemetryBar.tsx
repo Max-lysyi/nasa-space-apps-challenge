@@ -10,7 +10,7 @@ import {
   Eye,
   GraduationCap,
 } from "lucide-react";
-import type { EphemerisResult, LunarCycleMetrics, SkillLevel } from "@/lib/types";
+import type { EphemerisResult, LunarCycleMetrics, SkillLevel, SolarArrayType } from "@/lib/types";
 import { SOLAR_CONSTANT_W_M2 } from "@/lib/constants";
 
 interface TelemetryBarProps {
@@ -21,6 +21,7 @@ interface TelemetryBarProps {
   onShowComparison: () => void;
   showComparison: boolean;
   onExitToLanding?: () => void;
+  solarArrayType?: SolarArrayType;
 }
 
 function formatTimer(hours: number | null): string {
@@ -42,10 +43,18 @@ export function TelemetryBar({
   onShowComparison,
   showComparison,
   onExitToLanding,
+  solarArrayType = "vertical",
 }: TelemetryBarProps) {
   const e = ephemeris;
+  const elevRad = Math.max(0, e.solarElevationAngle * (Math.PI / 180));
+  const effectivePowerFactor = !e.isSunVisible
+    ? 0
+    : solarArrayType === "horizontal"
+      ? Math.sin(elevRad)
+      : Math.cos(elevRad);
+
   const solarFlux = Math.round(
-    SOLAR_CONSTANT_W_M2 * e.solarPowerFactor,
+    SOLAR_CONSTANT_W_M2 * effectivePowerFactor,
   );
 
   return (
@@ -153,7 +162,7 @@ export function TelemetryBar({
             <p className="font-mono telemetry-value font-semibold text-white">
               {skillLevel === "planner"
                 ? `${solarFlux} W/m²`
-                : `${Math.round(e.solarPowerFactor * 100)}%`}
+                : `${Math.round(effectivePowerFactor * 100)}%`}
             </p>
           </div>
         </div>
